@@ -6,9 +6,10 @@ DataBank <- read_excel("C:/Users/51972/Documents/GitHub/ProyectoMineriaGrupo/Ban
 
 head(DataBank)
 
+Databank <- subset(DataBank, select = -c(ID, `ZIP Code`))
+
 # Resumen descriptivo
 summary(DataBank)
-
 # Variable respuesta: Personal Loan -- Cualitativa (préstamo Personal: ¿Aceptó este cliente el préstamo personal ofrecido en la última campaña?)
 # Modelo de clasificación (Binaria) --- variable dummy: toma valores de 0 y 1
 summary(DataBank$`Personal Loan`)
@@ -83,10 +84,225 @@ print(correlation_matrix)
 #a disminuir.
 
 
+# Identificación de valores atípicos
+
+# Boxplot de la variable Age para identificar valores atípicos
+boxplot(DataBank$Age, 
+        xlab = "", ylab = "Age",
+        main = "Boxplot de Age")
+
+# Boxplot de la variable Experience para identificar valores atípicos
+boxplot(DataBank$Experience , 
+        xlab = "", ylab = "Experience ",
+        main = "Boxplot de Experience ")
+
+# Inconsistencia de los datos: Existen años de experiencia negativos
+
+# Boxplot de la variable Income para identificar valores atípicos
+boxplot(DataBank$Income, 
+        xlab = "", ylab = "Income",
+        main = "Boxplot de Income") # presenta outliyers
+
+
+# Boxplot de la variable Family para identificar valores atípicos
+boxplot(DataBank$Family, 
+        xlab = "", ylab = "Family",
+        main = "Boxplot de Family")
+
+# Boxplot de la variable CCAvg para identificar valores atípicos
+boxplot(DataBank$CCAvg, 
+        xlab = "", ylab = "CCAvg",
+        main = "Boxplot de CCAvg") # presenta outlyers
+
+
+# Boxplot de la variable Mortgage para identificar valores atípicos
+boxplot(DataBank$Mortgage, 
+        xlab = "", ylab = "Mortgage",
+        main = "Boxplot de Mortgage") # presenta outlyers
+
+
+# Histogramas para conocer la distribución
+
+hist(DataBank$Age, main = "Histograma var Age")
+
+hist(DataBank$Experience, main = "Histograma var Experience")
+
+hist(DataBank$Income, main = "Histograma var Income")
+
+hist(DataBank$Family, main = "Histograma var Family")
+
+hist(DataBank$CCAvg, main = "Histograma var CCAvg")
+
+hist(DataBank$Mortgage, main = "Histograma var Mortgage")
+
+
+library(naniar)
+
+# Crear la visualización de valores faltantes
+vis_miss(DataBank)
+
+# no hay valores faltantes ni duplicados
+
+duplicated(DataBank)
+
+
+# Tratamiento de outlyers
+
+
+#Tratamiento de datos outliers permite identificar y remover los datos outlier sin hacer cortes
+# Función para extracción de datos outliers
+
+tratamiento_outliers <- function(data, column, removeNA = TRUE) {
+  x <- data[[column]]
+  quantiles <- quantile(x, c(0.05, 0.95), na.rm = removeNA)
+  x[x < quantiles[1]] <- mean(x, na.rm = removeNA)
+  x[x > quantiles[2]] <- median(x, na.rm = removeNA)
+  data[[column]] <- x
+  data
+}
+
+# Indicamos que variable con datos outliers "pressure_height"
+data_tratada1 <- tratamiento_outliers(DataBank, "Income")
+
+
+#Gráfico con outliers y sin outliers
+par(mfrow = c(1,2))
+
+boxplot(DataBank$Income, main = "Income con outliers",
+        col = 3)
+boxplot(data_tratada1$Income, main = "Income sin outliers",col=2)
+
+#---------
+
+
+# Indicamos que variable con datos outliers "CCAvg"
+data_tratada2 <- tratamiento_outliers(DataBank, "CCAvg")
+
+
+#Gráfico con outliers y sin outliers
+par(mfrow = c(1,2))
+
+boxplot(DataBank$CCAvg, main = "CCAvg con outliers",
+        col = 3)
+boxplot(data_tratada2$CCAvg, main = "CCAvg sin outliers",col=2)
+
+#---------
+
+
+# Indicamos que variable con datos outliers "Mortgage"
+data_tratada3 <- tratamiento_outliers(DataBank, "Mortgage")
+
+
+#Gráfico con outliers y sin outliers
+par(mfrow = c(1,2))
+
+boxplot(DataBank$Mortgage, main = "Mortgage con outliers",
+        col = 3)
+boxplot(data_tratada3$Mortgage, main = "Mortgage sin outliers",col=2)
 
 
 
 
+# Transformación de variables que no presentan una distribución normal
+
+# Transformaciones
+#- Raiz cuadrada
+height_sqrt <- sqrt(DataBank$Income)
+
+# -Scale
+height_scale <- scale(DataBank$Income)
+
+#- Log(10)
+height_ln <- log(DataBank$Income)
+#- Log(2)
+height_log2 <- log(DataBank$Income, base=2)
+#- Log(5)
+height_log5 <- log(DataBank$Income, base=5)
+
+
+# Grafico Comparación trasnformaciones
+par(mfrow=c(3,2))
+hist(DataBank$Income, main = "Sin trasnformar")
+hist(height_sqrt, main = "transformación Sqrt")
+hist(height_scale, main = "transformación Scale")
+hist(height_ln, main = "transformación ln")
+hist(height_log2, main = "transformación long2")
+hist(height_log5, main = "transformación long10")
+
+
+#-------------
+  
+# Transformaciones
+#- Raiz cuadrada
+height_sqrt <- sqrt(DataBank$CCAvg)
+
+# -Scale
+height_scale <- scale(DataBank$CCAvg)
+
+#- Log(10)
+height_ln <- log(DataBank$CCAvg)
+#- Log(2)
+height_log2 <- log(DataBank$CCAvg, base=2)
+#- Log(5)
+height_log5 <- log(DataBank$CCAvg, base=5)
+
+
+# Grafico Comparación trasnformaciones
+par(mfrow=c(3,2))
+hist(DataBank$CCAvg, main = "Sin trasnformar")
+hist(height_sqrt, main = "transformación Sqrt")
+hist(height_scale, main = "transformación Scale")
+hist(height_ln, main = "transformación ln")
+hist(height_log2, main = "transformación long2")
+hist(height_log5, main = "transformación long10")
+
+#---------------
+
+# Transformaciones
+#- Raiz cuadrada
+height_sqrt <- sqrt(DataBank$Mortgage)
+
+# -Scale
+height_scale <- scale(DataBank$Mortgage)
+
+#- Log(10)
+height_ln <- log(DataBank$Mortgage)
+#- Log(2)
+height_log2 <- log(DataBank$Mortgage, base=2)
+#- Log(5)
+height_log5 <- log(DataBank$Mortgage, base=5)
+
+
+# Grafico Comparación trasnformaciones
+par(mfrow=c(3,2))
+hist(DataBank$Mortgage, main = "Sin trasnformar")
+hist(height_sqrt, main = "transformación Sqrt")
+hist(height_scale, main = "transformación Scale")
+hist(height_ln, main = "transformación ln")
+hist(height_log2, main = "transformación long2")
+hist(height_log5, main = "transformación long10")
+
+
+summary(DataBank$CCAvg)
+
+# Discretización de variable CCAvg 
+
+library(dplyr) 
+
+variables_discretizadas <- data_tratada2 %>%
+  select(CCAvg) %>%
+  mutate(
+    CCAvg_discretizada = cut(CCAvg, breaks = c(-Inf, 1, 5, 10, Inf), labels = c("Muy Bajo", "Bajo", "Medio", "Alto")))
+
+data_discretizada <- data_tratada2 #creamos nuevo objeto una copia de la data
+
+data_discretizada
+
+data_discretizada$CCAvg <- variables_discretizadas$CCAvg_discretizada
+
+#Validando la discretización (¿Hizo la conversión a discreta?)
+levels_values <- levels(data_discretizada$CCAvg)
+print(levels_values)
 
 
 
