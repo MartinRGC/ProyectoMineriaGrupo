@@ -309,12 +309,13 @@ normalize <- function(x) {
   return((x - min(x)) / (max(x) - min(x)))
 }
 # Seleccionamos algunos nombrs de las columnas 
-numeric_cols <- c("Age", "Experience", "Income", "Family","CCAvg", "Mortgage")
+numeric_cols <- c("Experience", "Income","CCAvg", "Mortgage")
 
 data_Normalizada <- data_tratada1
 # Normalizar las columnas numéricas
 data_Normalizada[numeric_cols] <- lapply(data_tratada1[numeric_cols], normalize)
 # Verificar los primeros registros del conjunto de datos transformado
+data_Normalizada <- data_Normalizada[c(-1,-5)]
 head(data_Normalizada)
 
 
