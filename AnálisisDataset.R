@@ -1,8 +1,9 @@
 
 #install.packages("readxl")
 library(readxl)
-
-DataBank <- read_excel("C:/Users/51972/Documents/GitHub/ProyectoMineriaGrupo/Bank_Personal_Loan_Modelling.xlsx", sheet = "Data")
+#C:/Users/51972/Documents/GitHub/ProyectoMineriaGrupo/Bank_Personal_Loan_Modelling.xlsx
+#C:/Mineria Datos/ProyectoMineriaGrupo/Bank_Personal_Loan_Modelling.xlsx
+DataBank <- read_excel("C:/Mineria Datos/ProyectoMineriaGrupo/Bank_Personal_Loan_Modelling.xlsx", sheet = "Data")
 
 head(DataBank)
 
@@ -304,7 +305,17 @@ data_discretizada$CCAvg <- variables_discretizadas$CCAvg_discretizada
 levels_values <- levels(data_discretizada$CCAvg)
 print(levels_values)
 
+normalize <- function(x) {
+  return((x - min(x)) / (max(x) - min(x)))
+}
+# Seleccionamos algunos nombrs de las columnas 
+numeric_cols <- c("Age", "Experience", "Income", "Family","CCAvg", "Mortgage")
 
+data_Normalizada <- data_tratada1
+# Normalizar las columnas numéricas
+data_Normalizada[numeric_cols] <- lapply(data_tratada1[numeric_cols], normalize)
+# Verificar los primeros registros del conjunto de datos transformado
+head(data_Normalizada)
 
 
 
